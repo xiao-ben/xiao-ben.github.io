@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>
+    小程序无限路由方案（proxy 实现） |
+    
+    手可摘星辰</title>
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+  
+  <script src="/js/pace.min.js"></script>
+</head>
+</html>
+<body>
+<main class="content">
+  <section class="outer">
+  <article id="post-小程序无限路由方案（proxy 实现）" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      小程序无限路由方案（proxy 实现）
+    </h1>
+  
+
+      </header>
+    
+
+    
+      <div class="article-meta">
+        <a href="/2019/05/05/小程序无限路由方案（proxy 实现）/" class="article-date">
+  <time datetime="2019-05-05T09:11:48.176Z" itemprop="datePublished">2019-05-05</time>
+</a>
+        
+      </div>
+    
+
+    <div class="article-entry" itemprop="articleBody">
+      
+
+      
+  <div class="article-gallery">
+    <div class="article-gallery-photos">
+      
+        
+          <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1557062978895&di=7511d23ef864b8362d79f8bfb43d1137&imgtype=0&src=http%3A%2F%2Fn.sinaimg.cn%2Fsinacn%2Fw1200h750%2F20171207%2F8e60-fypikwu4060068.jpg" itemprop="image">
+        
+      
+    </div>
+  </div>
+
+
+      
+        <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><ul>
+<li>小程序历史栈最多只支持10层</li>
+<li>当小程序业务比较复杂时，就很容易超过10层。</li>
+<li>当超过10层后，有的机型是点击无反应，有的机型会出现一些未知错误</li>
+</ul>
+<a id="more"></a>
+<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><ul>
+<li>修改小程序默认导航行为，自行维护 <code>pages</code></li>
+<li>页面层级小于等于10时，导航行为与原生导航行为一致，每次改动都记录到 <code>pages</code></li>
+<li>请求打开第11层及以上时，实际层级每次都是直接将第10层替换为目标页面</li>
+<li>返回时，逻辑层级相应回退；若回退后逻辑层级大于等于10，则实际层级将第10层替换为目标页面，否则实际层级回退到相应页面</li>
+</ul>
+<p>举例<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">逻辑层级 1 - 2 - ... - 8 - 9 - 10</span><br><span class="line">实际层级 1 - 2 - ... - 8 - 9 - 10</span><br><span class="line"></span><br><span class="line">打开</span><br><span class="line"></span><br><span class="line">逻辑层级 1 - 2 - ... - 8 - 9 - 10 - 11</span><br><span class="line">实际层级 1 - 2 - ... - 8 - 9 - 11</span><br><span class="line"></span><br><span class="line">打开，打开，打开</span><br><span class="line"></span><br><span class="line">逻辑层级 1 - 2 - ... - 8 - 9 - 10 - 11 - 12 - 13 - 14</span><br><span class="line">实际层级 1 - 2 - ... - 8 - 9 - 14</span><br><span class="line"></span><br><span class="line">返回</span><br><span class="line"></span><br><span class="line">逻辑层级 1 - 2 - ... - 8 - 9 - 10 - 11 - 12 - 13</span><br><span class="line">实际层级 1 - 2 - ... - 8 - 9 - 13</span><br><span class="line"></span><br><span class="line">返回，返回，返回</span><br><span class="line"></span><br><span class="line">逻辑层级 1 - 2 - ... - 8 - 9 - 10</span><br><span class="line">实际层级 1 - 2 - ... - 8 - 9 - 10</span><br><span class="line"></span><br><span class="line">返回</span><br><span class="line"></span><br><span class="line">逻辑层级 1 - 2 - ... - 8 - 9</span><br><span class="line">实际层级 1 - 2 - ... - 8 - 9</span><br></pre></td></tr></table></figure></p>
+<h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><p>这里采用一种比较特殊的办法，可以不影响业务代码，不需要添加任何其他的代码</p>
+<p>我们通过 <code>proxy</code> 的方式，改变全局变量 <code>wx</code> ，将全部路由跳转的方式都进行代理，在这个过程里维护我们自己的 <code>pages</code> 即可。</p>
+<p>在 app.js 里 </p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123;router&#125; <span class="keyword">from</span> <span class="string">'lib/router'</span></span><br><span class="line"><span class="comment">// 修改路由跳转方式（打破小程序 10 层限制）</span></span><br><span class="line">wx = <span class="keyword">new</span> <span class="built_in">Proxy</span>(wx, router)</span><br></pre></td></tr></table></figure>
+<p>新建文件 <code>/lib/router.js</code></p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Router</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>() &#123;</span><br><span class="line">    <span class="keyword">this</span>.maxPagesCount = <span class="number">10</span></span><br><span class="line">    <span class="keyword">this</span>.pages = []</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">get</span>(target, key, receiver) &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">switch</span> (key) &#123;</span><br><span class="line">        <span class="keyword">case</span> <span class="string">'navigateTo'</span>:</span><br><span class="line">        <span class="keyword">case</span> <span class="string">'redirectTo'</span>:</span><br><span class="line">        <span class="keyword">case</span> <span class="string">'switchTab'</span>:</span><br><span class="line">          <span class="keyword">return</span> <span class="function"><span class="params">data</span> =&gt;</span> <span class="keyword">this</span>.changeRouter(data, target, key, receiver)</span><br><span class="line">        <span class="keyword">case</span> <span class="string">'navigateBack'</span>:</span><br><span class="line">          <span class="keyword">return</span> <span class="function"><span class="params">data</span> =&gt;</span> <span class="keyword">this</span>.destroyPage(data, target, key, receiver)</span><br><span class="line">        <span class="keyword">case</span> <span class="string">'reLaunch'</span>:</span><br><span class="line">          <span class="keyword">this</span>.pages = []</span><br><span class="line">          <span class="keyword">return</span> <span class="built_in">Reflect</span>.get(target, key, receiver)</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">          <span class="keyword">return</span> <span class="built_in">Reflect</span>.get(target, key, receiver)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">      <span class="comment">// 错误时重启 app</span></span><br><span class="line">      <span class="keyword">return</span> <span class="built_in">Reflect</span>.get(target, <span class="string">'reLaunch'</span>, receiver)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  changeRouter(data, target, key, receiver) &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123;url&#125; = data</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.pages.length &lt; <span class="keyword">this</span>.maxPagesCount - <span class="number">1</span>) &#123;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">switch</span> (key) &#123;</span><br><span class="line">          <span class="keyword">case</span> <span class="string">'navigateTo'</span>:</span><br><span class="line">          <span class="keyword">case</span> <span class="string">'switchTab'</span>:</span><br><span class="line">            <span class="keyword">this</span>.pushPage(url)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">          <span class="keyword">case</span> <span class="string">'redirectTo'</span>:</span><br><span class="line">            <span class="keyword">this</span>.popPage()</span><br><span class="line">            <span class="keyword">this</span>.pushPage(url)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">          <span class="keyword">default</span>:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">Reflect</span>.get(target, key, receiver)(data)</span><br><span class="line">      &#125; <span class="keyword">catch</span> (e) &#123;</span><br><span class="line">        <span class="built_in">Reflect</span>.get(target, <span class="string">'reLaunch'</span>, receiver)(data)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">this</span>.pushPage(url)</span><br><span class="line">      <span class="built_in">Reflect</span>.get(target, <span class="string">'redirectTo'</span>, receiver)(data)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>.pages, <span class="string">'pages'</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  destroyPage(data, target, key, receiver) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.pages.length &lt; <span class="keyword">this</span>.maxPagesCount) &#123;</span><br><span class="line">      <span class="keyword">this</span>.popPage()</span><br><span class="line">      <span class="built_in">Reflect</span>.get(target, key, receiver)(data)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">this</span>.popPage()</span><br><span class="line">      <span class="keyword">const</span> url = <span class="keyword">this</span>.pages.slice(<span class="number">-1</span>)[<span class="number">0</span>]</span><br><span class="line">      <span class="built_in">Reflect</span>.get(target, <span class="string">'redirectTo'</span>, receiver)(&#123;url&#125;)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>.pages, <span class="string">'pages'</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  pushPage(url) &#123;</span><br><span class="line">    <span class="keyword">this</span>.pages.push(url)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  popPage(e) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.pages.pop()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> router = <span class="keyword">new</span> Router()</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/05/05/小程序无限路由方案（proxy 实现）/" data-id="cjvate42x0000ameguhsweb39" class="article-share-link">分享</a>
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/小程序/">小程序</a></li></ul>
+
+    </footer>
+
+  </div>
+
+  
+    
+
+  
+
+  
+    
+  
+
+</article>
+
+
+
+</section>
+  <footer class="footer">
+  
+  <div class="outer">
+    <div class="float-right">
+      <ul class="list-inline">
+  
+    <li><i class="fe fe-smile-alt"></i> <span id="busuanzi_value_site_uv"></span></li>
+  
+</ul>
+    </div>
+    <ul class="list-inline">
+      <li>&copy; 2019 手可摘星辰</li>
+      <li>Powered by <a href="http://hexo.io/" target="_blank">Hexo</a></li>
+      <li>Theme  <a href="https://github.com/zhwangart/hexo-theme-ocean">Ocean</a></li>
+    </ul>
+  </div>
+</footer>
+
+</main>
+<aside class="sidebar">
+  <button class="navbar-toggle"></button>
+
+<nav class="navbar">
+  
+    <div class="logo">
+      <a href="/"><img src="/images/hexo.svg" alt="手可摘星辰"></a>
+    </div>
+  
+  <ul class="nav nav-main">
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/">主页</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/archives">归档</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/gallery">相册</a>
+      </li>
+    
+      <li class="nav-item">
+        <a class="nav-item-link" href="/about">关于</a>
+      </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link nav-item-search" title="Search">
+        <i class="fe fe-search"></i>
+        搜索
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+      <li class="nav-item">
+          <div class="totop" id="totop">
+    <i class="fe fe-rocket"></i>
+</div>
+      </li>
+    <li class="nav-item">
+      
+        <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+          <i class="fe fe-feed"></i>
+        </a>
+      
+    </li>
+  </ul>
+</nav>
+
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+</aside>
+<script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/lazyload.min.js"></script>
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+  <script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+  <script src="/js/search.js"></script>
+
+
+<script src="/js/ocean.js"></script>
+
+</body>
+</html>

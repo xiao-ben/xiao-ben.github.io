@@ -56,14 +56,24 @@
 
     
       
-        <article id="post-1" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
+        <article id="post-小程序无限路由方案（proxy 实现）" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
 
   <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h2 itemprop="name">
+      <a class="article-title" href="/2019/05/05/小程序无限路由方案（proxy 实现）/">小程序无限路由方案（proxy 实现）</a>
+    </h2>
+  
+
+      </header>
     
 
     
       <div class="article-meta">
-        <a href="/2019/05/05/1/" class="article-date">
+        <a href="/2019/05/05/小程序无限路由方案（proxy 实现）/" class="article-date">
   <time datetime="2019-05-05T09:11:48.176Z" itemprop="datePublished">2019-05-05</time>
 </a>
         
@@ -74,72 +84,35 @@
       
 
       
-
+  <div class="article-gallery">
+    <div class="article-gallery-photos">
       
-        <h2 id="1"><a href="#1" class="headerlink" title="1"></a>1</h2>
+        
+          <a class="article-gallery-img" href="/2019/05/05/小程序无限路由方案（proxy 实现）/" rel="gallery_cjvate42x0000ameguhsweb39">
+            <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1557062978895&di=7511d23ef864b8362d79f8bfb43d1137&imgtype=0&src=http%3A%2F%2Fn.sinaimg.cn%2Fsinacn%2Fw1200h750%2F20171207%2F8e60-fypikwu4060068.jpg" itemprop="image">
+          </a>
+        
       
     </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/05/05/1/" data-id="cjvarldcx0000imegchjxqftt" class="article-share-link">分享</a>
-      
-    </footer>
-
   </div>
 
-  
-
-  
-
-</article>
-
-
 
       
-        <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-      <header class="article-header">
+        <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><ul>
+<li>小程序历史栈最多只支持10层</li>
+<li>当小程序业务比较复杂时，就很容易超过10层。</li>
+<li>当超过10层后，有的机型是点击无反应，有的机型会出现一些未知错误</li>
+</ul>
         
-  
-    <h2 itemprop="name">
-      <a class="article-title" href="/2019/05/05/hello-world/">Hello World</a>
-    </h2>
-  
-
-      </header>
-    
-
-    
-      <div class="article-meta">
-        <a href="/2019/05/05/hello-world/" class="article-date">
-  <time datetime="2019-05-05T08:19:40.035Z" itemprop="datePublished">2019-05-05</time>
-</a>
+          <a class="article-more-link" href="/2019/05/05/小程序无限路由方案（proxy 实现）/">Read More...</a>
         
-      </div>
-    
-
-    <div class="article-entry" itemprop="articleBody">
-      
-
-      
-
-      
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/05/05/hello-world/" data-id="cjvarldd80002imeg91oahw41" class="article-share-link">分享</a>
+      <a data-url="http://yoursite.com/2019/05/05/小程序无限路由方案（proxy 实现）/" data-id="cjvate42x0000ameguhsweb39" class="article-share-link">分享</a>
       
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/小程序/">小程序</a></li></ul>
+
     </footer>
 
   </div>
